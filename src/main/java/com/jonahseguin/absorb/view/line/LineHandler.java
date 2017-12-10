@@ -5,6 +5,7 @@ import com.jonahseguin.absorb.dependency.Provider;
 import com.jonahseguin.absorb.util.EntryBuilder;
 import com.jonahseguin.absorb.view.Label;
 import com.jonahseguin.absorb.view.ViewContext;
+import com.jonahseguin.absorb.view.timer.Timer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -39,6 +40,10 @@ public class LineHandler {
         if (this.entryBuilder != null ) {
             this.entryBuilder.remove();
         }
+    }
+
+    public Timer getProviderAsTimer() {
+        return (Timer) provider;
     }
 
 }

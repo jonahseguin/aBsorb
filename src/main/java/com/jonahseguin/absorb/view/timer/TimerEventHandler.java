@@ -16,8 +16,8 @@ public abstract class TimerEventHandler {
 
     }
 
-    public void onUpdate(Timer timer) {
-
+    public double onUpdate(Timer timer) {
+        return timer.getValue();
     }
 
     public void onPause(Timer timer) {

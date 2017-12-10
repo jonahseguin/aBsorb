@@ -53,6 +53,11 @@ public class TimerBuilder {
         return this;
     }
 
+    public TimerBuilder change(double change) {
+        this.timer.setChange(change);
+        return this;
+    }
+
     public TimerBuilder eventHandler(TimerEventHandler timerEventHandler) {
         this.timer.setEventHandler(timerEventHandler);
         return this;

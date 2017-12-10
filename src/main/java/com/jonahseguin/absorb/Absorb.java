@@ -50,17 +50,16 @@ public class Absorb extends JavaPlugin {
                     .max(60)
                     .min(0)
                     .interval(2L)
+                    .change(0.1) // Change value by 0.1 every 2 ticks (0.1 seconds)
                     .eventHandler(new TimerEventHandler() {
                         @Override
                         public void onReachMin(Timer timer) {
                             // Make the timer invisible
                             timer.getLabel().setVisible(false);
                         }
+
                     })
                     .build();
-
-
-
 
         // Can switch between views seamlessly
         absorboard.activate("default");

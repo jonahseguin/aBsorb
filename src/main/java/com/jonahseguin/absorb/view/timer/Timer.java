@@ -46,7 +46,7 @@ public class Timer implements Provider {
             value = max;
             eventHandler.onReachMax(this);
         }
-        eventHandler.onUpdate(this);
+        this.value = eventHandler.onUpdate(this);
     }
 
     public void setFormat(String format) {
