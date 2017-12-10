@@ -22,7 +22,7 @@ public class Absorb extends JavaPlugin {
 
     public Absorboard exampleBoard() {
 
-        Absorboard absorboard = new Absorboard(this, Bukkit.getPlayerExact("Shawckz"), "My Scoreboard");
+        Absorboard absorboard = new Absorboard(this, Bukkit.getPlayerExact("Shawckz"), "My Scoreboard", true);
 
         // .view() uses the 'default' view; or the first found view if the default does not exist (otherwise it creates the default)
         absorboard.view().bind(4).to("Hello there");

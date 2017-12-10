@@ -69,21 +69,24 @@ public class TimerPool {
         }
 
         contexts.values().forEach(context -> context.getViews().forEach(view -> {
-            view.getLines().values().forEach(lineHandler -> {
-                Provider provider = lineHandler.getProvider();
-                if (provider != null) {
-                    if (provider instanceof Timer) {
-                        Timer timer = (Timer) provider;
-                        timer.update();
-                        lineHandler.update();
-                    }
-                    else {
-                        if (lineHandler.getSettings().isUpdate()) {
-                            lineHandler.update();
+            if (view.isActive()) {
+                view.getLines().values().forEach(lineHandler -> {
+                    Provider provider = lineHandler.getProvider();
+                    if (provider != null) {
+                        if (provider instanceof Timer) {
+                            Timer timer = (Timer) provider;
+                            if (timer.isRendered() && !timer.isPaused()) {
+                                timer.update();
+                                lineHandler.update();
+                            }
+                        } else {
+                            if (lineHandler.getSettings().isUpdate()) {
+                                lineHandler.update();
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         }));
 
     }

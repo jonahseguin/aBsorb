@@ -6,6 +6,10 @@ import com.jonahseguin.absorb.view.View;
 import com.jonahseguin.absorb.view.ViewContext;
 import lombok.Getter;
 
+import java.text.DecimalFormat;
+
+import org.bukkit.ChatColor;
+
 /**
  * Created by Jonah on 11/4/2017.
  * Project: aBsorb
@@ -15,8 +19,10 @@ import lombok.Getter;
 @Getter
 public class Timer implements Provider {
 
+    protected boolean rendered = false;
     private final View view;
-    protected String format = "Timer: %d";
+    protected DecimalFormat decimalFormat = new DecimalFormat("#.0");
+    protected String format = "Timer: %s";
     protected boolean paused = false;
     protected long interval = 20L;
     protected double change = 1;
@@ -93,9 +99,15 @@ public class Timer implements Provider {
         this.eventHandler = eventHandler;
     }
 
+    public void setRendered(boolean rendered) {
+        this.rendered = rendered;
+    }
+
     @Override
     public Label provide(ViewContext context) {
-        return this.label.value(String.format(format, value)).timer(true);
+        return this.label
+                .value(ChatColor.translateAlternateColorCodes('&', String.format(format, decimalFormat.format(value))))
+                .timer(true);
     }
 
 }

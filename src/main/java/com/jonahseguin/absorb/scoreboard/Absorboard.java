@@ -33,15 +33,21 @@ public class Absorboard {
     private final Objective objective;
     private final Player player;
 
-    public Absorboard(Plugin plugin, Player player, String title) {
+    public Absorboard(Plugin plugin, Player player, String title, boolean override) {
         this.plugin = plugin;
         this.player = player;
-        if (player.getScoreboard() != null) {
-            this.scoreboard = player.getScoreboard();
-        }
-        else {
+        if (override) {
             this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
             player.setScoreboard(scoreboard);
+        }
+        else {
+            if (player.getScoreboard() != null) {
+                this.scoreboard = player.getScoreboard();
+            }
+            else {
+                this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+                player.setScoreboard(scoreboard);
+            }
         }
         Objective obj = scoreboard.getObjective(DisplaySlot.SIDEBAR);
         if (obj == null) {
@@ -76,6 +82,7 @@ public class Absorboard {
             this.activeView.unrender();
         }
         this.activeView = view;
+        this.activeView.render();
     }
 
 

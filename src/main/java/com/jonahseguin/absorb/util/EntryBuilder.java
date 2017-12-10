@@ -3,6 +3,7 @@ package com.jonahseguin.absorb.util;
 import com.google.common.base.Splitter;
 import com.jonahseguin.absorb.view.Label;
 import lombok.Getter;
+import net.md_5.bungee.api.ChatColor;
 
 import java.util.Iterator;
 import java.util.UUID;
@@ -39,10 +40,13 @@ public class EntryBuilder {
     }
 
     public void setValue(int value) {
-        if (!score.isScoreSet()) {
-            score.setScore(-1);
+        this.value = value;
+        if (score != null) {
+            if (!score.isScoreSet()) {
+                score.setScore(-1);
+            }
+            score.setScore(value);
         }
-        score.setScore(value);
     }
 
     public void update(Label label) {
@@ -59,7 +63,7 @@ public class EntryBuilder {
     }
 
     private void create(String newEntry) {
-        this.entry = newEntry;
+        this.entry = ChatColor.translateAlternateColorCodes('&', newEntry);
         remove();
 
         if (newEntry.length() <= 16) {
@@ -69,8 +73,12 @@ public class EntryBuilder {
             score.setScore(value);
         }
         else {
-            team = scoreboard.registerNewTeam(teamID);
-
+            if (team == null) {
+                team = scoreboard.registerNewTeam(teamID);
+            }
+            else {
+                team.getEntries().clear();
+            }
             Iterator<String> it = Splitter.fixedLength(16).split(newEntry).iterator();
             if (newEntry.length() > 16) {
                 team.setPrefix(it.next());
@@ -88,9 +96,11 @@ public class EntryBuilder {
     public void remove() {
         if (team != null) {
             team.unregister();
+            team = null;
         }
         if (score != null) {
             score.getScoreboard().resetScores(score.getEntry());
+            score = null;
         }
     }
 

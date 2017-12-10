@@ -3,6 +3,7 @@ package com.jonahseguin.absorb.view;
 import com.google.common.collect.Maps;
 import com.jonahseguin.absorb.scoreboard.Absorboard;
 import com.jonahseguin.absorb.view.line.LineHandler;
+import com.jonahseguin.absorb.view.timer.Timer;
 import com.jonahseguin.absorb.view.timer.TimerPool;
 import lombok.Getter;
 
@@ -32,6 +33,10 @@ public class View {
         this.timerPool = DEFAULT_TIMER_POOL;
     }
 
+    public boolean isActive() {
+        return absorboard.getActiveView().getName().equals(this.name);
+    }
+
     public ViewContext createContext(int line) {
         return new ViewContext(this.context.getAbsorboard(), this, this.context.getPlayer())
                 .setLine(line);
@@ -43,6 +48,21 @@ public class View {
 
     public View withTimerPool(TimerPool timerPool) {
         this.timerPool = timerPool;
+        return this;
+    }
+
+    /**
+     * To be called by the executing plugin
+     * @return this
+     */
+    public View initTimerPool() {
+        if (timerPool == null) {
+            timerPool = DEFAULT_TIMER_POOL;
+        }
+        timerPool.register(absorboard, this);
+        if (!timerPool.isRunning()) {
+            timerPool.startTimerPool(absorboard.getPlugin());
+        }
         return this;
     }
 
@@ -74,11 +94,30 @@ public class View {
     }
 
     public void render() {
-        this.lines.forEach((integer, lineHandler) -> lineHandler.update());
+        this.lines.forEach((integer, lineHandler) ->{
+            if (lineHandler.getProvider() instanceof Timer) {
+                Timer timer = lineHandler.getProviderAsTimer();
+                timer.setRendered(true);
+                timer.update();
+                lineHandler.update();
+            }
+            else {
+                lineHandler.update();
+            }
+        });
     }
 
     public void unrender() {
-        this.lines.forEach((integer, lineHandler) -> lineHandler.remove());
+        this.lines.forEach((integer, lineHandler) -> {
+            if (lineHandler.getProvider() instanceof Timer) {
+                Timer timer = lineHandler.getProviderAsTimer();
+                timer.setRendered(false);
+                lineHandler.remove();
+            }
+            else {
+                lineHandler.remove();
+            }
+        });
     }
 
 }

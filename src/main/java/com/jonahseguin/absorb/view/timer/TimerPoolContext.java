@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.jonahseguin.absorb.scoreboard.Absorboard;
 import com.jonahseguin.absorb.view.View;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -15,7 +16,7 @@ import java.util.Set;
 public class TimerPoolContext {
 
     private final Absorboard absorboard;
-    private final Set<View> views = Sets.newConcurrentHashSet();
+    private final Set<View> views = new HashSet<>();
 
     public TimerPoolContext(Absorboard absorboard) {
         this.absorboard = absorboard;

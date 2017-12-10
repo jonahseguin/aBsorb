@@ -39,6 +39,7 @@ public class LineHandler {
     public void remove() {
         if (this.entryBuilder != null ) {
             this.entryBuilder.remove();
+            this.entryBuilder = null;
         }
     }
 
