@@ -21,7 +21,6 @@ public class Timer implements Provider {
 
     protected boolean rendered = false;
     private final View view;
-    protected DecimalFormat decimalFormat = new DecimalFormat("#.0");
     protected String format = "Timer: %s";
     protected boolean paused = false;
     protected long interval = 20L;
@@ -32,12 +31,32 @@ public class Timer implements Provider {
     protected double value = 0;
     protected Label label = new Label("");
     protected TimerEventHandler eventHandler = new TimerEventHandler(){};
+    protected TimerFormatter formatter = new DefaultTimerFormatter();
 
     public Timer(View view) {
         this.view = view;
     }
 
-    public void update() {
+    public Timer hide() {
+        this.getLabel().setVisible(false);
+        return this;
+    }
+
+    public Timer show() {
+        this.getLabel().setVisible(true);
+        return this;
+    }
+
+    public boolean visible() {
+        return this.getLabel().isVisible();
+    }
+
+    public Timer updateAndMakeVisible() {
+        this.getLabel().setVisible(true);
+        return this.update();
+    }
+
+    public Timer update() {
         if (this.direction.equals(TimerDirection.ADD)) {
             this.value += this.change;
         }
@@ -53,13 +72,14 @@ public class Timer implements Provider {
             eventHandler.onReachMax(this);
         }
         this.value = eventHandler.onUpdate(this);
+        return this;
     }
 
     public void setFormat(String format) {
         this.format = format;
     }
 
-    public void setPaused(boolean paused) {
+    public Timer setPaused(boolean paused) {
         if (this.paused != paused) {
             if (paused) {
                 eventHandler.onPause(this);
@@ -69,30 +89,42 @@ public class Timer implements Provider {
             }
         }
         this.paused = paused;
+        return this;
     }
 
-    public void setInterval(long interval) {
+    public Timer setInterval(long interval) {
         this.interval = interval;
+        return this;
     }
 
-    public void setChange(double change) {
+    public Timer setChange(double change) {
         this.change = change;
+        return this;
     }
 
-    public void setDirection(TimerDirection direction) {
+    public Timer setDirection(TimerDirection direction) {
         this.direction = direction;
+        return this;
     }
 
-    public void setMin(double min) {
+    public Timer setMin(double min) {
         this.min = min;
+        return this;
     }
 
-    public void setMax(double max) {
+    public Timer setMax(double max) {
         this.max = max;
+        return this;
     }
 
-    public void setValue(double value) {
+    public Timer setValue(double value) {
         this.value = value;
+        return this;
+    }
+
+    public Timer setFormatter(TimerFormatter formatter) {
+        this.formatter = formatter;
+        return this;
     }
 
     public void setEventHandler(TimerEventHandler eventHandler) {
@@ -106,7 +138,7 @@ public class Timer implements Provider {
     @Override
     public Label provide(ViewContext context) {
         return this.label
-                .value(ChatColor.translateAlternateColorCodes('&', String.format(format, decimalFormat.format(value))))
+                .value(ChatColor.translateAlternateColorCodes('&', String.format(format, formatter.format(value))))
                 .timer(true);
     }
 

@@ -26,13 +26,23 @@ public class LineHandler {
     private LineSettings settings = new LineSettings();
     private EntryBuilder entryBuilder = null;
     private final ViewContext context;
+    private boolean dynamicLineNumber = false;
+
+    public boolean isVisible() {
+        return entryBuilder != null && entryBuilder.getScore() != null && entryBuilder.getScore().isScoreSet();
+    }
 
     public void update() {
         if (this.entryBuilder == null) {
             this.entryBuilder = new EntryBuilder(context.getAbsorboard().getScoreboard(), context.getAbsorboard().getObjective());
         }
         Label value = provider.provide(context);
-        entryBuilder.setValue(lineNumber);
+        if (dynamicLineNumber) {
+            entryBuilder.setValue(context.getView().getDynamicLineNumber(this));
+        }
+        else {
+            entryBuilder.setValue(lineNumber);
+        }
         entryBuilder.update(value);
     }
 

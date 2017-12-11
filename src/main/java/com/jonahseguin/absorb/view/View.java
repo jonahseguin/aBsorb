@@ -120,4 +120,16 @@ public class View {
         });
     }
 
+    public int getDynamicLineNumber(LineHandler lineHandler) {
+        int active = 0;
+        for (LineHandler handler : this.lines.values()) {
+            if (!handler.equals(lineHandler)) {
+                if (handler.isVisible()) {
+                    active++;
+                }
+            }
+        }
+        return active + 1;
+    }
+
 }
