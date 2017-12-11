@@ -1,4 +1,6 @@
-package com.jonahseguin.absorb.view.timer;
+package com.jonahseguin.absorb.view.timer.formatters;
+
+import com.jonahseguin.absorb.view.timer.TimerFormatter;
 
 import java.text.DecimalFormat;
 

@@ -1,10 +1,11 @@
-package com.jonahseguin.absorb.view.timer;
+package com.jonahseguin.absorb.view.timer.pool;
 
 import com.google.common.collect.Maps;
 import com.jonahseguin.absorb.dependency.Provider;
 import com.jonahseguin.absorb.scoreboard.Absorboard;
 import com.jonahseguin.absorb.util.AbsorbException;
 import com.jonahseguin.absorb.view.View;
+import com.jonahseguin.absorb.view.timer.Timer;
 import lombok.Getter;
 import lombok.Setter;
 

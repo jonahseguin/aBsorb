@@ -4,9 +4,8 @@ import com.jonahseguin.absorb.dependency.Provider;
 import com.jonahseguin.absorb.view.Label;
 import com.jonahseguin.absorb.view.View;
 import com.jonahseguin.absorb.view.ViewContext;
+import com.jonahseguin.absorb.view.timer.formatters.DefaultTimerFormatter;
 import lombok.Getter;
-
-import java.text.DecimalFormat;
 
 import org.bukkit.ChatColor;
 

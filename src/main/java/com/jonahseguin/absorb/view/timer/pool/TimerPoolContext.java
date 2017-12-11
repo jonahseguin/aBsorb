@@ -1,4 +1,4 @@
-package com.jonahseguin.absorb.view.timer;
+package com.jonahseguin.absorb.view.timer.pool;
 
 import com.google.common.collect.Sets;
 import com.jonahseguin.absorb.scoreboard.Absorboard;

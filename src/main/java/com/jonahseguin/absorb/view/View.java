@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import com.jonahseguin.absorb.scoreboard.Absorboard;
 import com.jonahseguin.absorb.view.line.LineHandler;
 import com.jonahseguin.absorb.view.timer.Timer;
-import com.jonahseguin.absorb.view.timer.TimerPool;
+import com.jonahseguin.absorb.view.timer.pool.TimerPool;
 import lombok.Getter;
 
 import java.util.Map;
@@ -22,7 +22,7 @@ public class View {
 
     private final Absorboard absorboard;
     private final String name;
-    private final Map<Integer, LineHandler> lines = Maps.newConcurrentMap();
+    private final Map<Integer, LineHandler> lines = Maps.newConcurrentMap(); // <Line ID, Handler>
     private final ViewContext context;
     private TimerPool timerPool;
 
@@ -42,8 +42,8 @@ public class View {
                 .setLine(line);
     }
 
-    public ViewContext getContext(int line) {
-        return handler(line).getContext();
+    public ViewContext getContext(int lineID) {
+        return handler(lineID).getContext();
     }
 
     public View withTimerPool(TimerPool timerPool) {
@@ -66,23 +66,20 @@ public class View {
         return this;
     }
 
-    public LineHandler handler(int line) {
-        if (lines.containsKey(line)) {
-            return lines.get(line);
+    /**
+     * Get a LineHandler by it's ID
+     * If one does not exist, one is created, with the line number being set to the provided lineID param by default.
+     * @param lineID The line ID number; *doesn't have to match the actual line number of the score*
+     * @return the Handler
+     */
+    public LineHandler handler(int lineID) {
+        if (lines.containsKey(lineID)) {
+            return lines.get(lineID);
         }
-        LineHandler lineHandler = new LineHandler(createContext(line));
-        lineHandler.setLineNumber(line);
-        lines.put(line, lineHandler);
+        LineHandler lineHandler = new LineHandler(createContext(lineID));
+        lineHandler.setLineNumber(lineID);
+        lines.put(lineID, lineHandler);
         return lineHandler;
-    }
-
-    public void changeLine(int oldLine, int newLine) {
-        if (lines.containsKey(oldLine)) {
-            LineHandler handler = handler(oldLine);
-            handler.setLineNumber(newLine);
-            lines.remove(oldLine);
-            lines.put(newLine, handler);
-        }
     }
 
     public ViewBinder bind(int line) {
@@ -120,6 +117,7 @@ public class View {
         });
     }
 
+    // To be called usually internally by aBsorb (LineHandler)
     public int getDynamicLineNumber(LineHandler lineHandler) {
         int active = 0;
         for (LineHandler handler : this.lines.values()) {

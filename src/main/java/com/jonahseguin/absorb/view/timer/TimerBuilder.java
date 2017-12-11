@@ -23,6 +23,11 @@ public class TimerBuilder {
         return this;
     }
 
+    public TimerBuilder formatter(TimerFormatter formatter) {
+        this.timer.setFormatter(formatter);
+        return this;
+    }
+
     public TimerBuilder interval(long interval) {
         this.timer.setInterval(interval);
         return this;
