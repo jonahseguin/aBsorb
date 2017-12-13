@@ -17,12 +17,25 @@ import lombok.Getter;
 public class ViewBinder {
 
     private final View view;
-    private final int line;
+    private final int lineID;
+    private int lineNumber;
     private Provider provider = null;
 
-    public ViewBinder(View view, int line) {
+    public ViewBinder(View view, int lineID) {
         this.view = view;
-        this.line = line;
+        this.lineID = lineID;
+        this.lineNumber = lineID;
+    }
+
+    public ViewBinder(View view, int lineID, int lineNumber) {
+        this.view = view;
+        this.lineID = lineID;
+        this.lineNumber = lineNumber;
+    }
+
+    public ViewBinder withLineNumber(int lineNumber) {
+        this.lineNumber = lineNumber;
+        return this;
     }
 
     public ViewBinder to(Provider provider) {
@@ -42,7 +55,7 @@ public class ViewBinder {
     }
 
     public ViewBinder withSettings(LineSettings settings) {
-        this.view.handler(line).setSettings(settings);
+        this.view.handler(lineID).setSettings(settings);
         return this;
     }
 

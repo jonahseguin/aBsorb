@@ -34,6 +34,9 @@ public class View {
     }
 
     public boolean isActive() {
+        if (absorboard == null || absorboard.getActiveView() == null) {
+            return false;
+        }
         return absorboard.getActiveView().getName().equals(this.name);
     }
 
@@ -82,12 +85,16 @@ public class View {
         return lineHandler;
     }
 
-    public ViewBinder bind(int line) {
-        return new ViewBinder(this, line);
+    public boolean hasHandler(int lineID) {
+        return lines.containsKey(lineID);
+    }
+
+    public ViewBinder bind(int lineID) {
+        return new ViewBinder(this, lineID);
     }
 
     public void registerBinding(ViewBinder binder) {
-        this.handler(binder.getLine()).setProvider(binder.getProvider());
+        this.handler(binder.getLineID()).setProvider(binder.getProvider());
     }
 
     public void render() {
@@ -128,6 +135,10 @@ public class View {
             }
         }
         return active + 1;
+    }
+
+    public void clear() {
+        this.lines.clear();
     }
 
 }

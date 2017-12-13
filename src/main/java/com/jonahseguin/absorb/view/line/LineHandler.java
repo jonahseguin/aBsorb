@@ -2,6 +2,7 @@ package com.jonahseguin.absorb.view.line;
 
 import com.jonahseguin.absorb.dependency.provider.EmptyProvider;
 import com.jonahseguin.absorb.dependency.Provider;
+import com.jonahseguin.absorb.util.AbsorbException;
 import com.jonahseguin.absorb.util.EntryBuilder;
 import com.jonahseguin.absorb.view.Label;
 import com.jonahseguin.absorb.view.ViewContext;
@@ -27,6 +28,7 @@ public class LineHandler {
     private EntryBuilder entryBuilder = null;
     private final ViewContext context;
     private boolean dynamicLineNumber = false;
+    private Label currentValue = null;
 
     public boolean isVisible() {
         return entryBuilder != null && entryBuilder.getScore() != null && entryBuilder.getScore().isScoreSet();
@@ -44,6 +46,7 @@ public class LineHandler {
             entryBuilder.setValue(lineNumber);
         }
         entryBuilder.update(value);
+        this.currentValue = value;
     }
 
     public void remove() {
@@ -54,7 +57,18 @@ public class LineHandler {
     }
 
     public Timer getProviderAsTimer() {
-        return (Timer) provider;
+        if (provider != null) {
+            if (provider instanceof Timer) {
+                return (Timer) provider;
+            }
+            else {
+                throw new AbsorbException("Cannot cast this provider to Timer because it is not a timer");
+            }
+        }
+        else {
+            this.provider = new Timer(this.context.getView());
+            return (Timer) this.provider;
+        }
     }
 
 }

@@ -63,7 +63,8 @@ public class EntryBuilder {
     }
 
     private void create(String newEntry) {
-        this.entry = ChatColor.translateAlternateColorCodes('&', newEntry);
+        newEntry = ChatColor.translateAlternateColorCodes('&', newEntry);
+        this.entry = newEntry;
         remove();
 
         if (newEntry.length() <= 16) {

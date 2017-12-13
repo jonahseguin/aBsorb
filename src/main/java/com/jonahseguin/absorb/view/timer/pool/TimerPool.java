@@ -41,6 +41,18 @@ public class TimerPool {
         contexts.get(absorboard).getViews().add(view);
     }
 
+    public void unregister(Absorboard absorboard) {
+        if (contexts.containsKey(absorboard)) {
+            contexts.remove(absorboard);
+        }
+    }
+
+    public void unregister(Absorboard absorboard, View view) {
+        if (contexts.containsKey(absorboard)) {
+            contexts.get(absorboard).getViews().remove(view);
+        }
+    }
+
     public final void startTimerPool(Plugin plugin) {
         if (!running) {
             bukkitTask = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, this::updateTimerPool, interval, interval);

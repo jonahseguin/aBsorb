@@ -26,12 +26,14 @@ import org.bukkit.scoreboard.Scoreboard;
 @Getter
 public class Absorboard {
 
+    private static final Scoreboard BLANK_SCOREBOARD = Bukkit.getScoreboardManager().getNewScoreboard();
     private final Plugin plugin;
     private final Map<String, View> views = Maps.newConcurrentMap();
     private volatile View activeView = null;
     private final Scoreboard scoreboard;
     private final Objective objective;
     private final Player player;
+    private boolean visible = true;
 
     public Absorboard(Plugin plugin, Player player, String title, boolean override) {
         this.plugin = plugin;
@@ -90,6 +92,16 @@ public class Absorboard {
         this.views.put(view.getName(), view);
     }
 
+    public void unregisterView(View view) {
+        if (this.views.containsKey(view.getName())) {
+            this.views.remove(view.getName());
+        }
+        if (this.activeView.getName().equals(view.getName())) {
+            this.activeView = null;
+            this.activeView = view();
+        }
+    }
+
     public View getView(String view) {
         return views.get(view);
     }
@@ -115,6 +127,16 @@ public class Absorboard {
             return this.activeView;
         }
         return this.views.values().stream().findFirst().orElse(this.newView("default"));
+    }
+
+    public void show() {
+        this.visible = true;
+        this.player.setScoreboard(this.scoreboard);
+    }
+
+    public void hide() {
+        this.visible = false;
+        this.player.setScoreboard(BLANK_SCOREBOARD);
     }
 
 }
