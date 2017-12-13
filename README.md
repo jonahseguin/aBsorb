@@ -1,7 +1,6 @@
 # aBsorb
 *inversion-of-control oriented scoreboard library for use with the Spigot API*
 
-
 # About
 this project allows in-depth or simple easy-to-use simple or advanced scoreboard creation and manipulation for the Spigot API.
 it follows the inversion-of-control (IoC) design pattern to make use of the binding of consumers and providers to allow for
@@ -28,7 +27,7 @@ and this to your dependencies:
 <dependency>
     <groupId>com.github.jonahseguin</groupId>
     <artifactId>aBsorb</artifactId>
-    <version>0.1</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -50,6 +49,8 @@ you can make a static one using the StaticProvider class, or a dynamic one using
 To update your labels (ex so it matches the current value of the context), you can manually call the update() method in a LineHandler, or
 you can take advantage of Timer Pooling and set the "update" boolean within the LineSettings to true.  This will call the update method
 every time your Timer Pool ticks, even for providers that are not timers as long as "update" is true.
+
+Another important thing to note, is that 'line numbers' in views are actually not line numbers.  The value you pass in when binding a line to a provider is simply the "Line ID".  This line ID can remain the same, and your actual displayed line number for this value can change.  I.e you can use the new `dynamicLineNumber` property to allow aBsorb to handle the allocation of your line numbers as lines appear and re-appear, if you were creating a scoreboard where order of values is not important (i.e for most Hardcore-Factions scoreboards).
 
 That's the basic rundown.  Of course I plan to keep this update, add javadocs, etc.
 
@@ -106,6 +107,15 @@ absorboard.activate("general"); // Switch to our 'general' view
 absorboard.activate("timer"); // Switch to our 'timer' view
 ```
 
-And that's the basics of this very easy-to-use yet abstract and expandable scoreboard library.
-There are lots of ways to customize your implementation, etc.
-  Future updates will see more features.
+### Introducting formatters!
+
+Now, you can format your timer values with ease.  There are a few included formatters in aBsorb, and you can easily implement your own.
+
+To make your own formatter, just have it implement the `TimerFormatter` interface, and then set your timer to use the formatter by calling
+```java
+timer.setFormatter(myFormatter);
+```
+
+By default, aBsorb timers use the `DefaultTimerFormatter` which simply uses the Decimal Format pattern "#.0".  
+Other formatters included in aBsorb are the `HHMMSSTimerFormatter`: hh:mm:ss,
+and the `MMSSTimerFormatter`: mm:ss
