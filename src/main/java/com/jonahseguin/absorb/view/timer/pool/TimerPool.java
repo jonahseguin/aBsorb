@@ -91,10 +91,20 @@ public class TimerPool {
                             if (timer.isRendered() && !timer.isPaused()) {
                                 timer.update();
                                 lineHandler.update();
+                                if (lineHandler.isDynamicLineNumber()) {
+                                    if(!timer.visible()) {
+                                        lineHandler.getContext().getView().updateDynamicLines();
+                                    }
+                                }
                             }
                         } else {
                             if (lineHandler.getSettings().isUpdate()) {
                                 lineHandler.update();
+                                if (lineHandler.isDynamicLineNumber()) {
+                                    if(!lineHandler.isVisible()) {
+                                        lineHandler.getContext().getView().updateDynamicLines();
+                                    }
+                                }
                             }
                         }
                     }

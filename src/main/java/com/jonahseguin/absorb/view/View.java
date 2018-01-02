@@ -126,15 +126,39 @@ public class View {
 
     // To be called usually internally by aBsorb (LineHandler)
     public int getDynamicLineNumber(LineHandler lineHandler) {
-        int active = 0;
+        int max = 0;
         for (LineHandler handler : this.lines.values()) {
             if (!handler.equals(lineHandler)) {
                 if (handler.isVisible()) {
-                    active++;
+                    if (handler.getEntryBuilder().getValue() > max) {
+                        max = handler.getEntryBuilder().getValue();
+                    }
                 }
             }
         }
-        return active + 1;
+        return max + 1;
+    }
+
+    public boolean isLineNumberRegistered(int number, LineHandler otherHandler) {
+        for (LineHandler lineHandler : this.lines.values()) {
+            if (lineHandler.equals(otherHandler)) continue;
+            if (lineHandler.getEntryBuilder().getValue() == number) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void updateDynamicLines() {
+        int i = 1;
+        for(LineHandler lineHandler : this.lines.values()) {
+            if (lineHandler.getCurrentValue() != null && lineHandler.getCurrentValue().isVisible() && lineHandler.isDynamicLineNumber()) {
+                while (isLineNumberRegistered(i, lineHandler)) {
+                    i++;
+                }
+                lineHandler.updateLineNumber(i);
+            }
+        }
     }
 
     public void clear() {

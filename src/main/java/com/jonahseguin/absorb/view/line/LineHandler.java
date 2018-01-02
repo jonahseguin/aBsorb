@@ -39,8 +39,8 @@ public class LineHandler {
             this.entryBuilder = new EntryBuilder(context.getAbsorboard().getScoreboard(), context.getAbsorboard().getObjective());
         }
         Label value = provider.provide(context);
-        if (dynamicLineNumber) {
-            entryBuilder.setValue(context.getView().getDynamicLineNumber(this));
+        if (isDynamicLineNumber()) {
+            context.getView().updateDynamicLines();
         }
         else {
             entryBuilder.setValue(lineNumber);
@@ -53,6 +53,18 @@ public class LineHandler {
         if (this.entryBuilder != null ) {
             this.entryBuilder.remove();
             this.entryBuilder = null;
+            if (isDynamicLineNumber()) {
+                context.getView().updateDynamicLines();
+            }
+        }
+    }
+
+    public void updateLineNumber(int i) {
+        this.lineNumber = i;
+        if (this.entryBuilder != null) {
+            if (this.entryBuilder.getValue() != i) {
+                this.entryBuilder.setValue(i);
+            }
         }
     }
 
