@@ -112,16 +112,15 @@ public class View {
     }
 
     public void unrender() {
-        this.lines.forEach((integer, lineHandler) -> {
-            if (lineHandler.getProvider() instanceof Timer) {
-                Timer timer = lineHandler.getProviderAsTimer();
-                timer.setRendered(false);
+        if (this.lines != null) {
+            this.lines.forEach((integer, lineHandler) -> {
+                if (lineHandler.getProvider() != null && lineHandler.getProvider() instanceof Timer) {
+                    Timer timer = lineHandler.getProviderAsTimer();
+                    timer.setRendered(false);
+                }
                 lineHandler.remove();
-            }
-            else {
-                lineHandler.remove();
-            }
-        });
+            });
+        }
     }
 
     // To be called usually internally by aBsorb (LineHandler)
@@ -141,9 +140,11 @@ public class View {
 
     public boolean isLineNumberRegistered(int number, LineHandler otherHandler) {
         for (LineHandler lineHandler : this.lines.values()) {
-            if (lineHandler.equals(otherHandler)) continue;
-            if (lineHandler.getEntryBuilder().getValue() == number) {
-                return true;
+            if (lineHandler != null && lineHandler.getEntryBuilder() != null) {
+                if (lineHandler.equals(otherHandler)) continue;
+                if (lineHandler.getEntryBuilder().getValue() == number) {
+                    return true;
+                }
             }
         }
         return false;
@@ -152,11 +153,13 @@ public class View {
     public void updateDynamicLines() {
         int i = 1;
         for(LineHandler lineHandler : this.lines.values()) {
-            if (lineHandler.getCurrentValue() != null && lineHandler.getCurrentValue().isVisible() && lineHandler.isDynamicLineNumber()) {
-                while (isLineNumberRegistered(i, lineHandler)) {
-                    i++;
+            if (lineHandler != null) {
+                if (lineHandler.getCurrentValue() != null && lineHandler.getCurrentValue().isVisible() && lineHandler.isDynamicLineNumber()) {
+                    while (isLineNumberRegistered(i, lineHandler)) {
+                        i++;
+                    }
+                    lineHandler.updateLineNumber(i);
                 }
-                lineHandler.updateLineNumber(i);
             }
         }
     }
