@@ -85,6 +85,13 @@ public class View {
         return lineHandler;
     }
 
+    public void removeHandler(int lineID) {
+        if (hasHandler(lineID)) {
+            handler(lineID).remove();
+            this.lines.remove(lineID);
+        }
+    }
+
     public boolean hasHandler(int lineID) {
         return lines.containsKey(lineID);
     }
