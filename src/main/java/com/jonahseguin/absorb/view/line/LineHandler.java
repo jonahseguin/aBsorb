@@ -49,6 +49,11 @@ public class LineHandler {
         this.currentValue = value;
     }
 
+    public LineHandler setDynamicLineNumber(boolean dln) {
+        this.dynamicLineNumber = dln;
+        return this;
+    }
+
     public void remove() {
         if (this.entryBuilder != null ) {
             this.entryBuilder.remove();

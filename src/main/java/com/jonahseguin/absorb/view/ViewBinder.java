@@ -2,6 +2,7 @@ package com.jonahseguin.absorb.view;
 
 import com.jonahseguin.absorb.dependency.Provider;
 import com.jonahseguin.absorb.dependency.provider.StaticProvider;
+import com.jonahseguin.absorb.view.line.LineHandler;
 import com.jonahseguin.absorb.view.line.LineSettings;
 import com.jonahseguin.absorb.view.timer.Timer;
 import com.jonahseguin.absorb.view.timer.TimerBuilder;
@@ -59,8 +60,8 @@ public class ViewBinder {
         return this;
     }
 
-    public View finish() {
-        return this.view;
+    public LineHandler finish() {
+        return this.view.handler(lineID);
     }
 
 }

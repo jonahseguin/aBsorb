@@ -37,6 +37,7 @@ public class Absorb extends JavaPlugin {
                 .bind(2).to(context -> new Label("Level: " + context.getPlayer().getLevel()))
                     .withSettings(new LineSettings(true))
                     .finish()
+                .getContext().getView()
 
                 .bind(1).to(context -> new Label("Gamemode: " + context.getPlayer().getGameMode().toString()))
                     .withSettings(new LineSettings(true))

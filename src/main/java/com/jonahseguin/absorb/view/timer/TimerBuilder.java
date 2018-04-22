@@ -1,6 +1,7 @@
 package com.jonahseguin.absorb.view.timer;
 
 import com.jonahseguin.absorb.view.ViewBinder;
+import com.jonahseguin.absorb.view.line.LineHandler;
 
 /**
  * Created by Jonah on 11/4/2017.
@@ -69,8 +70,8 @@ public class TimerBuilder {
     }
 
 
-    public ViewBinder build() {
-        return viewBinder.to(timer);
+    public LineHandler build() {
+        return viewBinder.to(timer).finish();
     }
 
 }
