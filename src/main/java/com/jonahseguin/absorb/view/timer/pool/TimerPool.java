@@ -8,11 +8,10 @@ import com.jonahseguin.absorb.view.View;
 import com.jonahseguin.absorb.view.timer.Timer;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Map;
-
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
+
+import java.util.Map;
 
 /**
  * Created by Jonah on 11/4/2017.
@@ -42,9 +41,7 @@ public class TimerPool {
     }
 
     public void unregister(Absorboard absorboard) {
-        if (contexts.containsKey(absorboard)) {
-            contexts.remove(absorboard);
-        }
+        contexts.remove(absorboard);
     }
 
     public void unregister(Absorboard absorboard, View view) {
@@ -100,10 +97,10 @@ public class TimerPool {
                         } else {
                             if (lineHandler.getSettings().isUpdate()) {
                                 lineHandler.update();
-                                if (lineHandler.isDynamicLineNumber()) {
-                                    if(!lineHandler.isVisible()) {
-                                        lineHandler.getContext().getView().updateDynamicLines();
-                                    }
+                            }
+                            if (lineHandler.isDynamicLineNumber()) {
+                                if (!lineHandler.isVisible()) {
+                                    lineHandler.getContext().getView().updateDynamicLines();
                                 }
                             }
                         }
