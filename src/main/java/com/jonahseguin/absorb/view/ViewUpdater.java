@@ -18,12 +18,13 @@ public class ViewUpdater implements Runnable {
     private final Plugin plugin;
     private final Set<Absorb> boards = new HashSet<>();
 
-    private long ticks = 2L;
+    private long ticks;
     private BukkitTask task = null;
     private boolean running = false;
 
-    public ViewUpdater(Plugin plugin) {
+    public ViewUpdater(Plugin plugin, long ticks) {
         this.plugin = plugin;
+        this.ticks = ticks;
     }
 
     public void start() {
@@ -40,6 +41,14 @@ public class ViewUpdater implements Runnable {
                 this.task.cancel();
                 this.task = null;
             }
+        }
+    }
+
+    public void setTicks(long ticks) {
+        this.ticks = ticks;
+        if (this.isRunning()) {
+            this.stop();
+            this.start();
         }
     }
 
