@@ -50,6 +50,7 @@ public class Absorb {
                 player.setScoreboard(scoreboard);
             }
         }
+
         Objective obj = scoreboard.getObjective(DisplaySlot.SIDEBAR);
         if (obj == null) {
             obj = scoreboard.registerNewObjective(player.getName(), "dummy");

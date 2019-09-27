@@ -10,10 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -64,6 +61,8 @@ public class View {
         if (newLines == null || newLines.isEmpty()) {
             this.unrender();
         } else {
+            Collections.reverse(newLines);
+
             if (this.entries.size() > newLines.size()) {
                 for (int i = newLines.size(); i < this.entries.size(); i++) {
                     ViewEntry entry = getEntryAt(i);
