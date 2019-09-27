@@ -4,14 +4,12 @@
 
 package com.jonahseguin.absorb.view;
 
-import org.bukkit.entity.Player;
-
 import java.util.List;
 
 public interface ViewProvider {
 
-    String getTitle(Player player);
+    String getTitle(ViewContext context);
 
-    List<String> getLines(Player player);
+    List<String> getLines(ViewContext context);
 
 }

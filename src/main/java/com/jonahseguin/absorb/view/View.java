@@ -53,13 +53,13 @@ public class View {
 
         Objective o = this.absorb.getObjective();
 
-        String title = ChatColor.translateAlternateColorCodes('&', this.provider.getTitle(absorb.getPlayer()));
+        String title = ChatColor.translateAlternateColorCodes('&', this.provider.getTitle(this.context));
 
         if (!o.getDisplayName().equals(title)) {
             o.setDisplayName(title);
         }
 
-        List<String> newLines = this.provider.getLines(absorb.getPlayer());
+        List<String> newLines = this.provider.getLines(this.context);
 
         if (newLines == null || newLines.isEmpty()) {
             this.unrender();
