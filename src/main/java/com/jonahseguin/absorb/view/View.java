@@ -1,15 +1,20 @@
+/*
+ * Copyright (c) 2019 Jonah Seguin.  All rights reserved.  You may not modify, decompile, distribute or use any code/text contained in this document(plugin) without explicit signed permission from Jonah Seguin.
+ */
+
 package com.jonahseguin.absorb.view;
 
-import com.google.common.collect.Maps;
-import com.jonahseguin.absorb.scoreboard.Absorboard;
-import com.jonahseguin.absorb.view.line.LineHandler;
-import com.jonahseguin.absorb.view.template.LineTemplate;
-import com.jonahseguin.absorb.view.template.ViewTemplater;
-import com.jonahseguin.absorb.view.timer.Timer;
-import com.jonahseguin.absorb.view.timer.pool.TimerPool;
+import com.jonahseguin.absorb.scoreboard.Absorb;
 import lombok.Getter;
+import org.bukkit.ChatColor;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Team;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Jonah on 11/4/2017.
@@ -20,177 +25,107 @@ import java.util.Map;
 @Getter
 public class View {
 
-    public static final TimerPool DEFAULT_TIMER_POOL = new TimerPool(20L);
-
-    private final Absorboard absorboard;
+    private final Absorb absorb;
     private final String name;
-    private final Map<Integer, LineHandler> lines = Maps.newConcurrentMap(); // <Line ID, Handler>
     private final ViewContext context;
-    private final ViewTemplater templater;
-    private TimerPool timerPool;
-    private String title = "Default Title";
+    private final List<ViewEntry> entries = new ArrayList<>();
+    private final Set<String> identifiers = new HashSet<>();
 
-    public View(String name, Absorboard absorboard) {
+    private ViewProvider provider = null;
+
+    public View(String name, Absorb absorb) {
         this.name = name;
-        this.absorboard = absorboard;
-        this.context = new ViewContext(absorboard, this, absorboard.getPlayer());
-        this.timerPool = DEFAULT_TIMER_POOL;
-        this.templater = new ViewTemplater(absorboard, this);
+        this.absorb = absorb;
+        this.context = new ViewContext(absorb, this, absorb.getPlayer());
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-        if (this.isActive()) {
-            absorboard.setTitle(title);
-        }
+    private static String getRandomChatColor() {
+        return ChatColor.values()[ThreadLocalRandom.current().nextInt(ChatColor.values().length)].toString();
     }
 
-    public boolean isActive() {
-        if (absorboard == null || absorboard.getActiveView() == null) {
-            return false;
-        }
-        return absorboard.getActiveView().getName().equals(this.name);
-    }
-
-    public ViewContext createContext(int line) {
-        return new ViewContext(this.context.getAbsorboard(), this, this.context.getPlayer())
-                .setLine(line);
-    }
-
-    public ViewContext getContext(int lineID) {
-        return handler(lineID).getContext();
-    }
-
-    public View withTimerPool(TimerPool timerPool) {
-        this.timerPool = timerPool;
+    public View provider(ViewProvider provider) {
+        this.provider = provider;
         return this;
-    }
-
-    /**
-     * To be called by the executing plugin
-     *
-     * @return this
-     */
-    public View initTimerPool() {
-        if (timerPool == null) {
-            timerPool = DEFAULT_TIMER_POOL;
-        }
-        timerPool.register(absorboard, this);
-        if (!timerPool.isRunning()) {
-            timerPool.startTimerPool(absorboard.getPlugin());
-        }
-        return this;
-    }
-
-    /**
-     * Get a LineHandler by it's ID
-     * If one does not exist, one is created, with the line number being set to the provided lineID param by default.
-     *
-     * @param lineID The line ID number; *doesn't have to match the actual line number of the score*
-     * @return the Handler
-     */
-    public LineHandler handler(int lineID) {
-        if (lines.containsKey(lineID)) {
-            return lines.get(lineID);
-        }
-        LineHandler lineHandler = new LineHandler(createContext(lineID));
-        lineHandler.setLineNumber(lineID);
-        lines.put(lineID, lineHandler);
-        return lineHandler;
-    }
-
-    public void removeHandler(int lineID) {
-        if (hasHandler(lineID)) {
-            handler(lineID).remove();
-            this.lines.remove(lineID);
-        }
-    }
-
-    public boolean hasHandler(int lineID) {
-        return lines.containsKey(lineID);
-    }
-
-    public ViewBinder bind(int lineID) {
-        return new ViewBinder(this, lineID);
-    }
-
-    public ViewBinder bind(LineTemplate template) {
-        return new ViewBinder(this, template.getId());
-    }
-
-    public void registerBinding(ViewBinder binder) {
-        this.handler(binder.getLineID()).setProvider(binder.getProvider());
     }
 
     public void render() {
-        absorboard.setTitle(this.title);
-        this.lines.forEach((integer, lineHandler) -> {
-            if (lineHandler.getProvider() instanceof Timer) {
-                Timer timer = lineHandler.getProviderAsTimer();
-                timer.setRendered(true);
-                timer.update();
-                lineHandler.update();
-            } else {
-                lineHandler.update();
+        if (this.provider == null) return;
+
+        Objective o = this.absorb.getObjective();
+
+        String title = ChatColor.translateAlternateColorCodes('&', this.provider.getTitle(absorb.getPlayer()));
+
+        if (!o.getDisplayName().equals(title)) {
+            o.setDisplayName(title);
+        }
+
+        List<String> newLines = this.provider.getLines(absorb.getPlayer());
+
+        if (newLines == null || newLines.isEmpty()) {
+            this.unrender();
+        } else {
+            if (this.entries.size() > newLines.size()) {
+                for (int i = newLines.size(); i < this.entries.size(); i++) {
+                    ViewEntry entry = getEntryAt(i);
+                    if (entry != null) {
+                        entry.remove();
+                    }
+                }
             }
-        });
+
+            int x = 1;
+            for (int i = 0; i < newLines.size(); i++) {
+                ViewEntry entry = getEntryAt(i);
+
+                String line = ChatColor.translateAlternateColorCodes('&', newLines.get(i));
+
+                if (entry == null) {
+                    entry = new ViewEntry(this, line);
+                } else {
+                    entry.setText(line);
+                    entry.setup();
+                }
+                entry.render(x++);
+            }
+
+        }
     }
 
     public void unrender() {
-        if (this.lines != null) {
-            this.lines.forEach((integer, lineHandler) -> {
-                if (lineHandler.getProvider() != null && lineHandler.getProvider() instanceof Timer) {
-                    Timer timer = lineHandler.getProviderAsTimer();
-                    timer.setRendered(false);
-                }
-                lineHandler.remove();
-            });
-        }
+        this.entries.forEach(ViewEntry::remove);
+        this.entries.clear();
+        this.identifiers.clear();
+        this.absorb.getScoreboard().getTeams().forEach(Team::unregister);
     }
 
-    // To be called usually internally by aBsorb (LineHandler)
-    public int getDynamicLineNumber(LineHandler lineHandler) {
-        int max = 0;
-        for (LineHandler handler : this.lines.values()) {
-            if (!handler.equals(lineHandler)) {
-                if (handler.isVisible()) {
-                    if (handler.getEntryBuilder().getValue() > max) {
-                        max = handler.getEntryBuilder().getValue();
-                    }
-                }
-            }
+    public boolean isActive() {
+        if (absorb == null || absorb.getActiveView() == null) {
+            return false;
         }
-        return max + 1;
+        return absorb.getActiveView().getName().equals(this.name);
     }
 
-    public boolean isLineNumberRegistered(int number, LineHandler otherHandler) {
-        for (LineHandler lineHandler : this.lines.values()) {
-            if (lineHandler != null && lineHandler.getEntryBuilder() != null) {
-                if (lineHandler.equals(otherHandler)) continue;
-                if (lineHandler.getEntryBuilder().getValue() == number) {
-                    return true;
-                }
-            }
+    public ViewEntry getEntryAt(int score) {
+        if (score >= this.entries.size()) {
+            return null;
         }
-        return false;
+        return this.entries.get(score);
     }
 
-    public void updateDynamicLines() {
-        int i = 1;
-        for (LineHandler lineHandler : this.lines.values()) {
-            if (lineHandler != null) {
-                if (lineHandler.getCurrentValue() != null && lineHandler.getCurrentValue().isVisible() && lineHandler.isDynamicLineNumber()) {
-                    while (isLineNumberRegistered(i, lineHandler)) {
-                        i++;
-                    }
-                    lineHandler.updateLineNumber(i);
-                }
-            }
-        }
-    }
+    public String getUniqueID() {
+        String id = getRandomChatColor() + ChatColor.WHITE;
 
-    public void clear() {
-        this.lines.clear();
+        while (this.identifiers.contains(id)) {
+            id = id + getRandomChatColor() + ChatColor.WHITE;
+        }
+
+        if (id.length() > 16) {
+            return this.getUniqueID();
+        }
+
+        this.identifiers.add(id);
+
+        return id;
     }
 
 }

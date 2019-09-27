@@ -1,21 +1,20 @@
+/*
+ * Copyright (c) 2019 Jonah Seguin.  All rights reserved.  You may not modify, decompile, distribute or use any code/text contained in this document(plugin) without explicit signed permission from Jonah Seguin.
+ */
+
 package com.jonahseguin.absorb.scoreboard;
 
 import com.google.common.collect.Maps;
-import com.jonahseguin.absorb.dependency.Provider;
-import com.jonahseguin.absorb.dependency.provider.StaticProvider;
-import com.jonahseguin.absorb.view.ViewContext;
-import com.jonahseguin.absorb.view.line.LineHandler;
 import com.jonahseguin.absorb.view.View;
 import lombok.Getter;
-
-import java.util.Map;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+
+import java.util.Map;
 
 /**
  * Created by Jonah on 11/4/2017.
@@ -24,7 +23,7 @@ import org.bukkit.scoreboard.Scoreboard;
  * @ 4:23 PM
  */
 @Getter
-public class Absorboard {
+public class Absorb {
 
     private static final Scoreboard BLANK_SCOREBOARD = Bukkit.getScoreboardManager().getNewScoreboard();
     private final Plugin plugin;
@@ -35,7 +34,7 @@ public class Absorboard {
     private final Player player;
     private boolean visible = true;
 
-    public Absorboard(Plugin plugin, Player player, String title, boolean override) {
+    public Absorb(Plugin plugin, Player player, boolean override) {
         this.plugin = plugin;
         this.player = player;
         if (override) {
@@ -55,17 +54,10 @@ public class Absorboard {
         if (obj == null) {
             obj = scoreboard.registerNewObjective(player.getName(), "dummy");
             obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-            obj.setDisplayName(title);
+            obj.setDisplayName(" ");
         }
+
         this.objective = obj;
-    }
-
-    public void setTitle(String title) {
-        this.objective.setDisplayName(title);
-    }
-
-    public void update() {
-        this.activeView.render();
     }
 
     public boolean isActive(String view) {
@@ -93,9 +85,7 @@ public class Absorboard {
     }
 
     public void unregisterView(View view) {
-        if (this.views.containsKey(view.getName())) {
-            this.views.remove(view.getName());
-        }
+        this.views.remove(view.getName());
         if (this.activeView.getName().equals(view.getName())) {
             this.activeView = null;
             this.activeView = view();

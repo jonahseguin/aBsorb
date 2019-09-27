@@ -1,5 +1,5 @@
 name: aBsorb
-main: com.jonahseguin.absorb.Absorb
-version: 1.0.0 (${project.version})
+main: com.jonahseguin.absorb.AbsorbPlugin
+version: ${project.version}
 author: Jonah Seguin
-website: https://jonahseguin.com/absorb
+website: jonahseguin.com | github.com/jonahseguin/aBsorb
