@@ -12,4 +12,6 @@ public interface ViewProvider {
 
     List<String> getLines(ViewContext context);
 
+    default void onUpdate(ViewContext context) {}
+
 }

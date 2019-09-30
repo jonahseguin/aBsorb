@@ -88,6 +88,8 @@ public class View {
             }
 
         }
+
+        this.provider.onUpdate(this.context);
     }
 
     public void unrender() {
